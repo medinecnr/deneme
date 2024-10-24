@@ -50,14 +50,11 @@ export default function Urunler() {
   const [newProductDate, setNewProductDate] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // Düzenleme ve silme modalları için state'ler
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // Yeni ürün ekleme fonksiyonu
   const handleAddProduct = () => {
-    // Validasyon: Tüm alanların doldurulup doldurulmadığını kontrol edin
     if (!newProductName || !newProductCode || !newProductImage || !newProductDate) {
       setError("Lütfen tüm alanları doldurun ve resim seçin.");
       return;
@@ -66,13 +63,13 @@ export default function Urunler() {
     const newProduct: Product = {
       id: Date.now(),
       name: newProductName,
-      productcode: parseInt(newProductCode), // Ürün kodunu sayıya dönüştür
+      productcode: parseInt(newProductCode),
       date: newProductDate,
       image: newProductImage,
     };
     setProducts([...products, newProduct]);
 
-    // Modal kapat ve formu sıfırla
+    
     onOpenChange();
     setNewProductName("");
     setNewProductCode("");
@@ -81,7 +78,7 @@ export default function Urunler() {
     setError(null);
   };
 
-  // Resim dosyasını yükleme
+ 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -143,14 +140,12 @@ export default function Urunler() {
                 <td className="border">{product.productcode}</td>
                 <td className="border">{product.date}</td>
                 <td className="border">
-                  {/* Düzenle Butonu */}
                   <Button onPress={() => {
                     setSelectedProduct(product);
                     setIsEditModalOpen(true);
                   }}>
                     <EditIcon /> Düzenle
                   </Button>
-                  {/* Sil Butonu */}
                   <Button color="danger" className="ml-2" onPress={() => {
                     setSelectedProduct(product);
                     setIsDeleteModalOpen(true);
@@ -164,7 +159,6 @@ export default function Urunler() {
         </table>
       </div>
 
-      {/* Yeni Ürün Ekleme Modali */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
@@ -217,7 +211,6 @@ export default function Urunler() {
         </ModalContent>
       </Modal>
 
-      {/* Düzenleme Modali */}
       <Modal isOpen={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <ModalContent>
           {(onClose) => (
@@ -238,7 +231,7 @@ export default function Urunler() {
                       type="text"
                       value={selectedProduct.productcode.toString()}
                       onChange={(e) =>
-                        setSelectedProduct({ ...selectedProduct, productcode: parseInt(e.target.value.replace(/[^0-9]/g, '')) }) // Harfleri engelle
+                        setSelectedProduct({ ...selectedProduct, productcode: parseInt(e.target.value.replace(/[^0-9]/g, '')) }) 
                       }
                       className="input p-2 rounded-md"
                     />
@@ -273,7 +266,6 @@ export default function Urunler() {
       </ModalContent>
     </Modal>
 
-    {/* Silme Modali */}
     <Modal isOpen={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
       <ModalContent>
         {(onClose) => (
