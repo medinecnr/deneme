@@ -24,14 +24,14 @@ export const initialProducts: Product[] = [
     image: "https://picsum.photos/id/228/200/300",
   },
   {
-    id: 1,
+    id: 2,
     name: "Ürün 2",
     productcode: 43534,
     date: "29.07.2024",
     image: "https://picsum.photos/id/238/200/300",
   },
   {
-    id: 1,
+    id: 3,
     name: "Ürün 3",
     productcode: 76876,
     date: "10.10.2024",
@@ -43,7 +43,6 @@ export default function Urunler() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
-
   const [newProductName, setNewProductName] = useState("");
   const [newProductCode, setNewProductCode] = useState("");
   const [newProductImage, setNewProductImage] = useState<string | null>(null);
@@ -53,6 +52,22 @@ export default function Urunler() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, isEditMode: boolean = false) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageData = reader.result as string;
+        if (isEditMode && selectedProduct) {
+          setSelectedProduct({ ...selectedProduct, image: imageData });
+        } else {
+          setNewProductImage(imageData);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAddProduct = () => {
     if (!newProductName || !newProductCode || !newProductImage || !newProductDate) {
@@ -67,27 +82,14 @@ export default function Urunler() {
       date: newProductDate,
       image: newProductImage,
     };
-    setProducts([...products, newProduct]);
 
-    
-    onOpenChange();
+    setProducts([...products, newProduct]);
+    onOpenChange(); 
     setNewProductName("");
     setNewProductCode("");
     setNewProductImage(null);
     setNewProductDate("");
     setError(null);
-  };
-
- 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewProductImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleEditProduct = () => {
@@ -178,7 +180,7 @@ export default function Urunler() {
                     type="text"
                     placeholder="Ürün Kodu"
                     value={newProductCode}
-                    onChange={(e) => setNewProductCode(e.target.value.replace(/[^0-9]/g, ''))} // Harfleri engelle
+                    onChange={(e) => setNewProductCode(e.target.value.replace(/[^0-9]/g, ''))}
                     className="input p-2 rounded-md"
                   />
                   <input
@@ -190,7 +192,7 @@ export default function Urunler() {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={handleImageUpload}
+                    onChange={(e) => handleImageUpload(e)}
                     className="input p-2 rounded-md"
                   />
                   {newProductImage && (
@@ -203,7 +205,7 @@ export default function Urunler() {
                   Kapat
                 </Button>
                 <Button color="success" onPress={handleAddProduct}>
-                  KAYDET
+                KAYDET
                 </Button>
               </ModalFooter>
             </>
@@ -211,81 +213,98 @@ export default function Urunler() {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>Ürünü Düzenle</ModalHeader>
-              <ModalBody>
-                {selectedProduct && (
+      {selectedProduct && (
+        <Modal isOpen={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader>Ürünü Düzenle</ModalHeader>
+                <ModalBody>
                   <div className="flex flex-col gap-2">
                     <input
                       type="text"
+                      placeholder="Ürün Adı"
                       value={selectedProduct.name}
                       onChange={(e) =>
-                        setSelectedProduct({ ...selectedProduct, name: e.target.value })
+                        setSelectedProduct({
+                          ...selectedProduct,
+                          name: e.target.value,
+                        })
                       }
                       className="input p-2 rounded-md"
                     />
                     <input
                       type="text"
+                      placeholder="Ürün Kodu"
                       value={selectedProduct.productcode.toString()}
                       onChange={(e) =>
-                        setSelectedProduct({ ...selectedProduct, productcode: parseInt(e.target.value.replace(/[^0-9]/g, '')) }) 
+                        setSelectedProduct({
+                          ...selectedProduct,
+                          productcode: parseInt(
+                            e.target.value.replace(/[^0-9]/g, "")
+                          ),
+                        })
                       }
                       className="input p-2 rounded-md"
                     />
                     <input
-                      type="text"
-                      value={selectedProduct.image}
+                      type="date"
+                      value={selectedProduct.date}
                       onChange={(e) =>
-                        setSelectedProduct({ ...selectedProduct, image: e.target.value })
+                        setSelectedProduct({
+                          ...selectedProduct,
+                          date: e.target.value,
+                        })
                       }
                       className="input p-2 rounded-md"
-                    />                    <input
-                    type="date"
-                    value={selectedProduct.date}
-                    onChange={(e) =>
-                      setSelectedProduct({ ...selectedProduct, date: e.target.value })
-                    }
-                    className="input p-2 rounded-md"
-                  />
-                </div>
-              )}
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Kapat
-              </Button>
-              <Button color="success" onPress={handleEditProduct}>
-                Güncelle
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, true)}
+                      className="input p-2 rounded-md"
+                    />
+                    {selectedProduct.image && (
+                      <img
+                        src={selectedProduct.image}
+                        alt="Ürün Resmi"
+                        className="mt-4 rounded-md"
+                      />
+                    )}
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    Kapat
+                  </Button>
+                  <Button color="success" onPress={handleEditProduct}>
+                    KAYDET
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      )}
 
-    <Modal isOpen={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-      <ModalContent>
-        {(onClose) => (
-          <>
+      {selectedProduct && (
+        <Modal isOpen={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+          <ModalContent>
             <ModalHeader>Ürünü Sil</ModalHeader>
             <ModalBody>
-              <p>Bu ürünü silmek istediğinizden emin misiniz?</p>
+              <p>
+                {selectedProduct.name} adlı ürünü silmek istediğinize emin
+                misiniz?
+              </p>
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Kapat
-              </Button>
-              <Button color="danger" onPress={handleDeleteProduct}>
-                Sil
+            <Button color="danger" onPress={handleDeleteProduct}>
+                SİL
               </Button>
             </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
-  </div>
-);
+          </ModalContent>
+        </Modal>
+      )}
+    </div>
+  );
 }
