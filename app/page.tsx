@@ -43,7 +43,7 @@ export default function Urunler() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
-  // Yeni ürün form state'leri
+
   const [newProductName, setNewProductName] = useState("");
   const [newProductCode, setNewProductCode] = useState("");
   const [newProductImage, setNewProductImage] = useState<string | null>(null);
